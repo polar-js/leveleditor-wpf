@@ -13,10 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using System.IO;
 using Microsoft.Win32;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.ComponentModel;
+
+using static leveleditor.GL;
 
 namespace leveleditor
 {
@@ -25,24 +25,54 @@ namespace leveleditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private LevelEditor m_LevelEditor;
+
         public MainWindow()
         {
             InitializeComponent();
+            m_LevelEditor = new LevelEditor();
+            m_LevelEditor.PropertyChanged += LevelEditor_PropertyChanged;
+
+        }
+
+        private void LevelEditor_PropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "Status")
+            {
+                switch (m_LevelEditor.Status.Type)
+                {
+                    case StatusType.Trace:
+                        StatusTextBlock.Text = m_LevelEditor.Status.Body;
+                        StatusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                        break;
+                    case StatusType.Info:
+                        StatusTextBlock.Text = m_LevelEditor.Status.Body;
+                        StatusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(0, 100, 0));
+                        break;
+                    case StatusType.Warning:
+                        StatusTextBlock.Text = "Warning: " + m_LevelEditor.Status.Body;
+                        StatusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(240, 240, 0));
+                        break;
+                    case StatusType.Error:
+                        StatusTextBlock.Text = "Error: " + m_LevelEditor.Status.Body;
+                        StatusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(240, 0, 0));
+                        MessageBox.Show(StatusTextBlock.Text, "Polar Level Editor");
+                        break;
+                }
+                
+            }
         }
 
         private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
-            //  Get the OpenGL object.
-            SharpGL.OpenGL gl = glControl.OpenGL;
+            gl = glControl.OpenGL;
 
-            //  Set the clear color.
-            gl.ClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+            m_LevelEditor.RenderInit();
         }
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
         {
-            SharpGL.OpenGL gl = glControl.OpenGL;
-            gl.Clear(SharpGL.OpenGL.GL_COLOR_BUFFER_BIT | SharpGL.OpenGL.GL_DEPTH_BUFFER_BIT);
+            m_LevelEditor.Render();
         }
 
         private void MenuFileOpen_Click(object sender, RoutedEventArgs e)
@@ -51,18 +81,7 @@ namespace leveleditor
             ofd.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
             if (ofd.ShowDialog() == true)
             {
-                StatusTextBlock.Text = "Opening " + ofd.FileName;
-                dynamic levelData = JObject.Parse(File.ReadAllText(ofd.FileName));
-                
-                if (levelData.systemNames != null && levelData.entities != null && levelData.singletons != null)
-                {
-                    // TODO: save / process / show level data.
-                }
-                else
-                {
-                    StatusTextBlock.Text = "Error: Invalid level file.";
-                    MessageBox.Show("Error: Invalid level file.", "Polar Level Editor");
-                }
+                m_LevelEditor.MenuFileOpen(ofd.FileName);
             }
         }
 

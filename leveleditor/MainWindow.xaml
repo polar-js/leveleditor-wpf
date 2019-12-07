@@ -32,7 +32,7 @@
 
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <TextBlock x:Name="StatusTextBlock" Text="Hello World!"/>
+                <TextBlock x:Name="StatusTextBlock"/>
             </StatusBarItem>
         </StatusBar>
 
