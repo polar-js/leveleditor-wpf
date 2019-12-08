@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace leveleditor
 {
-    class EntityTemplate
+    public struct LevelProperties
     {
-        public List<dynamic> components;
+        public string ResourcePath;
     }
 }

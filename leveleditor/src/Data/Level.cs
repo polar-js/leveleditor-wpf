@@ -8,13 +8,15 @@ using Newtonsoft.Json.Linq;
 
 namespace leveleditor
 {
-    class Level
+    public class Level
     {
         private ECSState m_LevelState;
+        public LevelProperties Properties { get; set; }
 
-        public Level(ECSState levelState)
+        public Level(ECSState levelState, LevelProperties properties)
         {
             m_LevelState = levelState;
+            Properties = properties;
         }
 
         public static Level FromJSON(string json)
@@ -23,7 +25,7 @@ namespace leveleditor
 
             if (Verify(levelData))
             {
-                return new Level(levelData.ecsState.ToObject<ECSState>());
+                return new Level(levelData.ecsState.ToObject<ECSState>(), new LevelProperties { ResourcePath = levelData.resourcePath ?? "" });
             }
             return null;
         }

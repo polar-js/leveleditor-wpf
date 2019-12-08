@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace leveleditor
 {
-    class ECSState
+    public class ECSState
     {
         public List<string> systemNames;
         public List<EntityTemplate> entities;

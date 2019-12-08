@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Resources;
 
 using static leveleditor.GL;
 using static SharpGL.OpenGL;
@@ -14,18 +15,56 @@ namespace leveleditor
     class Shader
     {
         private uint m_RendererID;
-        private string m_Name;
+        public string Name { get; private set; }
         private Dictionary<string, int> m_Locations;
 
         public Shader(string name, string vertexSrc, string fragmentSrc)
         {
-            m_Name = name;
+            Name = name;
             m_Locations = new Dictionary<string, int>();
 
             var sources = new Dictionary<uint, string>();
             sources.Add(GL_VERTEX_SHADER, vertexSrc);
             sources.Add(GL_FRAGMENT_SHADER, fragmentSrc);
             Compile(sources);
+        }
+
+        public Shader(string name, string resourceName)
+        {
+            Name = name;
+            m_Locations = new Dictionary<string, int>();
+
+            string source = Encoding.UTF8.GetString((byte[])Properties.Resources.ResourceManager.GetObject(resourceName));
+            var shaderSources = PreProcess(source);
+            Compile(shaderSources);
+        }
+
+        private static Dictionary<uint, string> PreProcess(string source)
+        {
+            Dictionary<uint, string> sources = new Dictionary<uint, string>();
+
+            string currentType = "";
+            string[] lines = currentType.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i].Trim();
+                string[] words = line.Split(' ');
+                if (words.Length == 2)
+                {
+                    if (words[0] == "#type")
+                    {
+                        currentType = words[1];
+                        sources[ShaderTypeFromString(currentType)] = "";
+                        continue;
+                    }
+                }
+
+                if (currentType == "")
+                    continue;
+
+                sources[ShaderTypeFromString(currentType)] += line + '\n';
+            }
+            return sources;
         }
 
         public void Compile(Dictionary<uint, string> shaderSources)
@@ -109,6 +148,15 @@ namespace leveleditor
         public void UploadUniformMat4(string name, mat4 value)
         {
             gl.UniformMatrix4(GetUniformLocation(name), 1, false, value.to_array());
+        }
+
+        public static uint ShaderTypeFromString(string type)
+        {
+            if (type == "vertex")
+                return GL_VERTEX_SHADER;
+            if (type == "fragment" || type == "pixel")
+                return GL_FRAGMENT_SHADER;
+            throw new ArgumentException("Invalid type.");
         }
     }
 }
