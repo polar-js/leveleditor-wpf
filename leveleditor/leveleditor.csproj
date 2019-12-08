@@ -94,9 +94,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="src\Commands.cs" />
     <Compile Include="src\Data\Level.cs" />
     <Compile Include="src\Data\LevelProperties.cs" />
     <Compile Include="src\Data\LevelEditor.cs" />
+    <Compile Include="src\NewLevelWindow.xaml.cs">
+      <DependentUpon>NewLevelWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="src\PropertiesWindow.xaml.cs">
       <DependentUpon>PropertiesWindow.xaml</DependentUpon>
     </Compile>
@@ -122,6 +126,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="src\NewLevelWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="src\PropertiesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

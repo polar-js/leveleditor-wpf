@@ -6,16 +6,21 @@
         xmlns:local="clr-namespace:leveleditor"
         xmlns:sharpGL="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
         mc:Ignorable="d"
-        Title="Polar Level Editor" Height="450" Width="800">
+        Title="Polar Level Editor" Height="450" Width="800" Loaded="Window_Loaded">
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:Commands.SaveCommand}" Executed="SaveCommand_Executed"/>
+        <CommandBinding Command="{x:Static local:Commands.SaveAsCommand}" Executed="SaveAsCommand_Executed"/>
+        <CommandBinding Command="{x:Static local:Commands.OpenCommand}" Executed="OpenCommand_Executed"/>
+        <CommandBinding Command="{x:Static local:Commands.PropertiesCommand}" Executed="PropertiesCommand_Executed"/>
+    </Window.CommandBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_New Level" />
-                <MenuItem Header="_Open..." Click="MenuFileOpen_Click" />
+                <MenuItem Header="_New Level" Click="MenuFileNewLevel_Click" />
+                <MenuItem Header="_Open..." Command="{x:Static local:Commands.OpenCommand}" InputGestureText="Ctrl+O"/>
                 <Separator />
-                <MenuItem Header="_Save" />
-                <MenuItem Header="_Save As..." />
-                <MenuItem Header="_Close Level" />
+                <MenuItem Header="_Save" Command="{x:Static local:Commands.SaveCommand}" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="_Save As..." Command="{x:Static local:Commands.SaveAsCommand}" InputGestureText="Ctrl+Shift+S"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="MenuFileExit_Click" />
             </MenuItem>
@@ -28,7 +33,7 @@
                 <MenuItem Header="_Paste" />
                 <MenuItem Header="_Delete" />
                 <Separator />
-                <MenuItem x:Name="MenuEditProperties" Header="_Properties" Click="MenuEditProperties_Click" IsEnabled="False" />
+                <MenuItem x:Name="MenuEditProperties" Header="_Properties" Command="{x:Static local:Commands.PropertiesCommand}" IsEnabled="False" />
             </MenuItem>
         </Menu>
 

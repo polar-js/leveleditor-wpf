@@ -15,12 +15,14 @@ namespace leveleditor
 {
     public class LevelEditor : INotifyPropertyChanged
     {
-        public static LevelEditor Editor { get; set; } = new LevelEditor();
+        public static LevelEditor Instance { get; set; } = new LevelEditor();
 
+        private OrthographicCamera m_Camera;
         private Status m_Status;
         private Level m_Level;
-        private OrthographicCamera m_Camera;
         private string m_LevelPath = "";
+        private string m_LevelFileName = "";
+        private bool m_Changed = false;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public Status Status
@@ -50,11 +52,32 @@ namespace leveleditor
                 OnPropertyChanged("LevelPath");
             }
         }
-
+        public string LevelFileName
+        {
+            get => m_LevelFileName;
+            set
+            {
+                m_LevelFileName = value;
+                OnPropertyChanged("LevelFileName");
+            }
+        }
+        public bool Changed
+        {
+            get => m_Changed;
+            set
+            {
+                m_Changed = value;
+                OnPropertyChanged("Changed");
+            }
+        }
 
         public LevelEditor()
         {
             m_Status = new Status();
+            Level = new Level(new ECSState(), new LevelProperties { ResourcePath = "" });
+            LevelFileName = "untitled.json";
+            LevelPath = "";
+            Changed = true;
         }
 
         protected void OnPropertyChanged(string name)
@@ -82,8 +105,9 @@ namespace leveleditor
             {
                 Level = level;
                 LevelPath = path;
+                LevelFileName = Path.GetFileName(path);
+                Changed = false;
                 Status = new Status { Type = StatusType.Info, Body = "Loaded " + path };
-
                 if (Level.Properties.ResourcePath == "")
                 {
                     MessageBox.Show("Warning: The loaded project contains no resource directory." +
@@ -94,6 +118,22 @@ namespace leveleditor
             {
                 Status = new Status { Type = StatusType.Error, Body = "Invalid level file " + path };
             }
+        }
+
+        public void SaveTo(string path)
+        {
+            File.WriteAllText(path, Level.ToJSON());
+            LevelFileName = Path.GetFileName(path);
+            LevelPath = path;
+            Changed = false;
+            Status = new Status { Type = StatusType.Trace, Body = $"Saved as {LevelFileName}" };
+        }
+
+        public void Save()
+        {
+            File.WriteAllText(LevelPath, Level.ToJSON());
+            Changed = false;
+            Status = new Status { Type = StatusType.Trace, Body = $"Saved {LevelFileName}" };
         }
     }
 }

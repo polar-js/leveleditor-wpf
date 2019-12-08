@@ -5,29 +5,38 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace leveleditor
 {
     public class Level
     {
-        private ECSState m_LevelState;
+        [JsonProperty(PropertyName = "state")]
+        public ECSState State { get; set; }
+        [JsonProperty(PropertyName = "properties")]
         public LevelProperties Properties { get; set; }
 
         public Level(ECSState levelState, LevelProperties properties)
         {
-            m_LevelState = levelState;
+            State = levelState;
             Properties = properties;
+        }
+
+        public string ToJSON()
+        {
+            return JsonConvert.SerializeObject(this);
         }
 
         public static Level FromJSON(string json)
         {
-            dynamic levelData = JObject.Parse(json);
+            //dynamic levelData = JObject.Parse(json);
 
-            if (Verify(levelData))
-            {
-                return new Level(levelData.ecsState.ToObject<ECSState>(), new LevelProperties { ResourcePath = levelData.resourcePath ?? "" });
-            }
-            return null;
+            //if (Verify(levelData))
+            //{
+            //    return new Level(levelData.ecsState.ToObject<ECSState>(), levelData.properties.ToObject<LevelProperties>() );
+            //}
+            //return null;
+            return JsonConvert.DeserializeObject<Level>(json);
         }
 
         public static bool Verify(dynamic data)
@@ -50,5 +59,7 @@ namespace leveleditor
 
             return true;
         }
+
+        
     }
 }

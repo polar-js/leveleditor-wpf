@@ -46,8 +46,8 @@ namespace leveleditor
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            m_ChangedProperties = LevelEditor.Editor.Level.Properties;
-            ResourcePathTextBox.Text = LevelEditor.Editor.Level.Properties.ResourcePath;
+            m_ChangedProperties = LevelEditor.Instance.Level.Properties;
+            ResourcePathTextBox.Text = LevelEditor.Instance.Level.Properties.ResourcePath;
             Changed = false;
         }
 
@@ -93,9 +93,10 @@ namespace leveleditor
 
         private void Apply()
         {
-            LevelEditor.Editor.Level.Properties = m_ChangedProperties;
+            LevelEditor.Instance.Level.Properties = m_ChangedProperties;
             Changed = false;
-            LevelEditor.Editor.Status = new Status { Type = StatusType.Trace, Body = "Applied changes to properties." };
+            LevelEditor.Instance.Status = new Status { Type = StatusType.Trace, Body = "Applied changes to properties." };
+            LevelEditor.Instance.Changed = true;
         }
     }
 }
