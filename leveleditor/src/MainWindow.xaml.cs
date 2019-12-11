@@ -5,7 +5,22 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using static leveleditor.GL;
+using System.Drawing;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
 
 namespace leveleditor
 {
@@ -14,11 +29,14 @@ namespace leveleditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private float m_Zoom = 1.0f;
+
         public MainWindow()
         {
             InitializeComponent();
             LevelEditor.Instance = new LevelEditor();
             LevelEditor.Instance.PropertyChanged += LevelEditor_PropertyChanged;
+            
             Commands.Init();
         }
 
@@ -75,17 +93,6 @@ namespace leveleditor
             }
         }
 
-        private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            gl = glControl.OpenGL;
-
-            LevelEditor.Instance.RenderInit();
-        }
-
-        private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
-        {
-            LevelEditor.Instance.Render();
-        }
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -149,5 +156,7 @@ namespace leveleditor
                 LevelEditor.Instance.SaveTo(dialog.FileName);
             }
         }
+
+       
     }
 }

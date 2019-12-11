@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.IO;
 
-using static leveleditor.GL;
-using static SharpGL.OpenGL;
 using System.Windows;
 
 namespace leveleditor
@@ -17,7 +15,6 @@ namespace leveleditor
     {
         public static LevelEditor Instance { get; set; } = new LevelEditor();
 
-        private OrthographicCamera m_Camera;
         private Status m_Status;
         private Level m_Level;
         private string m_LevelPath = "";
@@ -83,17 +80,6 @@ namespace leveleditor
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        public void RenderInit()
-        {
-            //  Set the clear color.
-            gl.ClearColor(0.6f, 0.6f, 0.6f, 1.0f);
-        }
-
-        public void Render()
-        {
-            gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
 
         public void MenuFileOpen(string path)

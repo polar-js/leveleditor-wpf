@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Windows;
 
 namespace leveleditor
 {
+    [JsonObject(ItemRequired = Required.Always)]
     public class Level
     {
-        [JsonProperty(PropertyName = "state")]
+        [JsonProperty(PropertyName = "ecsState")]
         public ECSState State { get; set; }
         [JsonProperty(PropertyName = "properties")]
         public LevelProperties Properties { get; set; }
@@ -29,14 +31,15 @@ namespace leveleditor
 
         public static Level FromJSON(string json)
         {
-            //dynamic levelData = JObject.Parse(json);
-
-            //if (Verify(levelData))
-            //{
-            //    return new Level(levelData.ecsState.ToObject<ECSState>(), levelData.properties.ToObject<LevelProperties>() );
-            //}
-            //return null;
-            return JsonConvert.DeserializeObject<Level>(json);
+            try
+            {
+                return JsonConvert.DeserializeObject<Level>(json);
+            }
+            catch (JsonSerializationException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
 
         public static bool Verify(dynamic data)

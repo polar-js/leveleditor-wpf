@@ -11,6 +11,6 @@ namespace leveleditor
     public struct LevelProperties
     {
         [JsonProperty(PropertyName = "resourcePath")]
-        public string ResourcePath;
+        public string ResourcePath { get; set; }
     }
 }
