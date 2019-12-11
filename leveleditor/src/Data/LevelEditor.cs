@@ -121,5 +121,25 @@ namespace leveleditor
             Changed = false;
             Status = new Status { Type = StatusType.Trace, Body = $"Saved {LevelFileName}" };
         }
+
+        public bool AddSystem(string name)
+        {
+            if (!Level.State.SystemNames.Contains(name))
+            {
+                Level.State.SystemNames.Add(name);
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemoveSystem(string name)
+        {
+            if (Level.State.SystemNames.Contains(name))
+            {
+                Level.State.SystemNames.Remove(name);
+                return true;
+            }
+            return false;
+        }
     }
 }

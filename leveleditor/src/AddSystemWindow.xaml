@@ -1,0 +1,16 @@
+﻿<Window x:Class="leveleditor.AddSystemWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:leveleditor"
+        mc:Ignorable="d"
+        Title="Add System" Height="200" Width="200">
+    <Grid>
+        <StackPanel>
+            <Label>System Name</Label>
+            <TextBox x:Name="SystemNameInput" Margin="20,5,20,10" TextChanged="SystemNameInput_TextChanged" KeyDown="SystemNameInput_KeyDown" />
+            <Button x:Name="AddSystemButton" Margin="20,5" Click="Button_Click">Add System</Button>
+        </StackPanel>
+    </Grid>
+</Window>

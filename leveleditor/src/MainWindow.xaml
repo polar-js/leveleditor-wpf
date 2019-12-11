@@ -6,12 +6,15 @@
         xmlns:local="clr-namespace:leveleditor"
         xmlns:i="clr-namespace:System.Windows.Interop;assembly=PresentationCore"
         mc:Ignorable="d"
-        Title="Polar Level Editor" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Polar Level Editor" Height="450" Width="800" Loaded="Window_Loaded"
+        xmlns:sharpGL="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:Commands.SaveCommand}" Executed="SaveCommand_Executed"/>
         <CommandBinding Command="{x:Static local:Commands.SaveAsCommand}" Executed="SaveAsCommand_Executed"/>
         <CommandBinding Command="{x:Static local:Commands.OpenCommand}" Executed="OpenCommand_Executed"/>
         <CommandBinding Command="{x:Static local:Commands.PropertiesCommand}" Executed="PropertiesCommand_Executed"/>
+        <CommandBinding Command="{x:Static local:Commands.CopyCommand}" Executed="CopyCommand_Executed"/>
+        <CommandBinding Command="{x:Static local:Commands.DeleteCommand}" Executed="DeleteCommand_Executed"/>
     </Window.CommandBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -62,23 +65,31 @@
                 </Grid.ColumnDefinitions>
                 <ScrollViewer Grid.Row="0">
                     <StackPanel >
-                        <Label Content="Systems" />
+                        <Label Content="Systems" FontWeight="Bold" />
+                        <ListView x:Name="SystemListView" >
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <EventSetter Event="PreviewMouseRightButtonDown" Handler="SystemListView_PreviewMouseRightButtonDown" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                        <Button Content="Add System" Margin="5" Click="AddSystemButton_Click" />
+
                     </StackPanel>
                 </ScrollViewer>
                 <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Height="4"/>
                 <ScrollViewer Grid.Row="2" Grid.RowSpan="3">
                     <StackPanel>
-                        <Label Content="Singletons" />
+                        <Label Content="Singletons" FontWeight="Bold" />
+                        <TreeView x:Name="SingletonTreeView"/>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
             <GridSplitter HorizontalAlignment="Stretch" Width="4" Grid.Column="1"/>
 
-            <Image x:Name="imgelt">
-                <Image.Source>
-                    <i:D3DImage x:Name="d3dimg" />
-                </Image.Source>
-            </Image>
+            <sharpGL:OpenGLControl 
+            OpenGLDraw="OpenGLControl_OpenGLDraw" OpenGLInitialized="OpenGLControl_OpenGLInitialized"
+            RenderContextType="FBO" Grid.Column="2" />
 
             <GridSplitter HorizontalAlignment="Stretch" Width="4" Grid.Column="3"/>
             <Grid Grid.Column="4" >
@@ -92,19 +103,18 @@
                 </Grid.ColumnDefinitions>
                 <ScrollViewer Grid.Row="0">
                     <StackPanel >
-                        <Label Content="Entities" />
+                        <Label Content="Entities" FontWeight="Bold" />
                     </StackPanel>
                 </ScrollViewer>
                 <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" Height="4"/>
                 <ScrollViewer Grid.Row="2" Grid.RowSpan="3">
                     <StackPanel>
-                        <Label Content="Components" />
+                        <Label Content="Components" FontWeight="Bold" />
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
         </Grid>
-        
-        
-
     </DockPanel>
+    
+    
 </Window>

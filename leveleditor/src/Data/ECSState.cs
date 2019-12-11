@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace leveleditor
 {
@@ -12,6 +13,7 @@ namespace leveleditor
     {
         [JsonProperty(PropertyName = "systemNames")]
         public List<string> SystemNames { get; set; }
+
         [JsonProperty(PropertyName = "entities")]
         public List<EntityTemplate> Entities { get; set; }
         [JsonProperty(PropertyName = "singletons")]

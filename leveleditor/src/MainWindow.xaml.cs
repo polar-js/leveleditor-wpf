@@ -20,7 +20,10 @@ using System.Windows.Threading;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using Color = System.Windows.Media.Color;
-using Point = System.Windows.Point;
+
+using SharpGL;
+using SharpGL.SceneGraph.Shaders;
+using SharpGL.SceneGraph;
 
 namespace leveleditor
 {
@@ -47,6 +50,7 @@ namespace leveleditor
                 Title = $"{LevelEditor.Instance.LevelFileName}* - Polar Level Editor";
             else
                 Title = $"{LevelEditor.Instance.LevelFileName} - Polar Level Editor";
+            UpdateFields();
         }
 
         private void LevelEditor_PropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -71,12 +75,13 @@ namespace leveleditor
                         case StatusType.Error:
                             StatusTextBlock.Text = "Error: " + LevelEditor.Instance.Status.Body;
                             StatusTextBlock.Foreground = new SolidColorBrush(Color.FromRgb(240, 0, 0));
-                            MessageBox.Show(StatusTextBlock.Text, "Polar Level Editor");
+                            MessageBox.Show(StatusTextBlock.Text, "Polar Level Editor", MessageBoxButton.OK, MessageBoxImage.Error);
                             break;
                     }
                     break;
                 case "Level":
                     MenuEditProperties.IsEnabled = LevelEditor.Instance.Level != null;
+                    UpdateFields();
                     break;
                 case "LevelFileName":
                     if (LevelEditor.Instance.Changed)
@@ -90,6 +95,74 @@ namespace leveleditor
                     else
                         Title = $"{LevelEditor.Instance.LevelFileName} - Polar Level Editor";
                     break;
+            }
+        }
+
+        private void UpdateFields()
+        {
+            UpdateSystemList();
+            UpdateSingletonTreeView();
+        }
+
+        private void UpdateSystemList()
+        {
+            SystemListView.Items.Clear();
+            foreach (string systemName in LevelEditor.Instance.Level.State.SystemNames)
+            {
+                ContextMenu menu = new ContextMenu();
+
+                MenuItem copy = new MenuItem() { Header = "Copy", InputGestureText = "Ctrl+C" };
+                copy.Command = Commands.CopyCommand;
+
+                MenuItem delete = new MenuItem() { Header = "Delete" };
+                delete.Command = Commands.DeleteCommand;
+
+                menu.Items.Add(copy);
+                menu.Items.Add(delete);
+
+                ListViewItem item = new ListViewItem()
+                {
+                    Content = systemName,
+                    ContextMenu = menu
+
+                };
+                SystemListView.Items.Add(item);
+            }
+        }
+
+        private void UpdateSingletonTreeView()
+        {
+            SingletonTreeView.Items.Clear();
+            foreach (dynamic component in LevelEditor.Instance.Level.State.Singletons.Components)
+            {
+                if (component.type == null)
+                    continue;
+
+                TreeViewItem typeItem = new TreeViewItem();
+                typeItem.Header = component.type;
+
+                foreach(PropertyDescriptor prop in TypeDescriptor.GetProperties(component))
+                {
+                    TreeViewItem propItem = new TreeViewItem();
+
+                    Label propLabel = new Label() { Content = prop.Name };
+                    DockPanel.SetDock(propLabel, Dock.Left);
+
+                    TextBox propData = new TextBox() { Text = prop.GetValue(component) };
+
+                    Button setButton = new Button() { Content = "Set" };
+                    DockPanel.SetDock(setButton, Dock.Right);
+                    
+                    DockPanel panel = new DockPanel();
+                    panel.Children.Add(propLabel);
+                    panel.Children.Add(setButton);
+                    panel.Children.Add(propData);
+
+                    propItem.Header = panel;
+                    typeItem.Items.Add(propItem);
+                }
+
+                SingletonTreeView.Items.Add(typeItem);
             }
         }
 
@@ -142,6 +215,45 @@ namespace leveleditor
             SaveAs();
         }
 
+        private void CopyCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SystemListView.SelectedItem != null)
+            {
+                if ((SystemListView.SelectedItem as ListViewItem).IsFocused)
+                {
+                    Clipboard.SetText((SystemListView.SelectedItem as ListViewItem).Content.ToString());
+                    LevelEditor.Instance.Status = new Status() { Type = StatusType.Trace, Body = "Copied to clipboard. " };
+                    return;
+                }
+            }
+        }
+
+        private void DeleteCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SystemListView.SelectedItem != null)
+            {
+                var item = SystemListView.SelectedItem as ListViewItem;
+                if (item.IsFocused)
+                {
+                    if (MessageBox.Show($"Are you sure you want to delete system '{item.Content.ToString()}'?", "Polar Level Editor", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        if (LevelEditor.Instance.RemoveSystem(item.Content.ToString()))
+                        {
+                            SystemListView.Items.Remove(item);
+                            LevelEditor.Instance.Status = new Status() { Type = StatusType.Trace, Body = "Removed system." };
+                        }
+                        else
+                        {
+                            LevelEditor.Instance.Status = new Status() { Type = StatusType.Error, Body = "Could not find system " + item.Content.ToString() };
+                            MessageBox.Show("Could not find system:\n" + item.Content.ToString(), "Polar Level Editor", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    
+                    return;
+                }
+            }
+        }
+
         private void SaveAs()
         {
             SaveFileDialog dialog = new SaveFileDialog()
@@ -157,6 +269,40 @@ namespace leveleditor
             }
         }
 
-       
+        private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
+        {
+            OpenGL gl = args.OpenGL;
+
+            gl.Enable(OpenGL.GL_DEPTH_TEST);
+        }
+
+        ShaderProgram program = new ShaderProgram();
+
+        private void OpenGLControl_OpenGLDraw(object sender, SharpGL.SceneGraph.OpenGLEventArgs args)
+        {
+
+        }
+
+        private void AddSystemButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddSystemWindow window = new AddSystemWindow();
+            window.Closed += AddSystemWindow_Close;
+            window.ShowDialog();
+        }
+
+        private void AddSystemWindow_Close(object sender, EventArgs e)
+        {
+            UpdateSystemList();
+        }
+
+        private void SystemListView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var item = sender as ListViewItem;
+            if (item != null && item.IsSelected)
+            {
+
+
+            }
+        }
     }
 }

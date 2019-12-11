@@ -64,6 +64,15 @@
     <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
       <HintPath>..\packages\Ookii.Dialogs.Wpf.1.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="SharpGL, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.2.4.1.2\lib\net40-client\SharpGL.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.SceneGraph, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.SceneGraph.2.4.1.2\lib\net40\SharpGL.SceneGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpGL.WPF, Version=2.4.1.2, Culture=neutral, PublicKeyToken=27fc851303210b27, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpGL.WPF.2.4.1.2\lib\net40\SharpGL.WPF.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -88,6 +97,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="src\AddSystemWindow.xaml.cs">
+      <DependentUpon>AddSystemWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="src\Commands.cs" />
     <Compile Include="src\Data\Level.cs" />
     <Compile Include="src\Data\LevelProperties.cs" />
@@ -99,6 +111,10 @@
       <DependentUpon>PropertiesWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\Data\Status.cs" />
+    <Page Include="src\AddSystemWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="src\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
