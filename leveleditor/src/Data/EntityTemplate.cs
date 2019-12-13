@@ -11,7 +11,7 @@ namespace leveleditor
     public class EntityTemplate
     {
         [JsonProperty(PropertyName = "components")]
-        public List<dynamic> Components;
+        public List<dynamic> Components { get; set; }
 
         public EntityTemplate()
         {

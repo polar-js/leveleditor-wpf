@@ -81,6 +81,7 @@
                 <ScrollViewer Grid.Row="2" Grid.RowSpan="3">
                     <StackPanel>
                         <Label Content="Singletons" FontWeight="Bold" />
+                        <Button x:Name="SingletonApplyButton" Content="Apply" Margin="20,5" IsEnabled="False" Click="SingletonApplyButton_Click"/>
                         <TreeView x:Name="SingletonTreeView"/>
                     </StackPanel>
                 </ScrollViewer>
